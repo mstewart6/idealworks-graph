@@ -11,23 +11,38 @@ import { Edge } from "./edge.js";
   const undirected = '--';
   const oneWay = '->';
   const bidrectional = '<>';
+  const localStorageKey = 'GRAPH_TEXT'
 
   const form = document.getElementById('graph-form');
-  form.addEventListener('submit', updateGraph);
+  form.addEventListener('submit', handleUpdate);
 
   let nodes = {};
   let edges = [];
 
-  function updateGraph(event) {
+  const storedText = localStorage.getItem(localStorageKey);
+
+  if (storedText) {
+    updateGraph(storedText);
+    document.getElementById('graph-data').value = storedText;
+  }
+
+  function handleUpdate(event) {
     event.preventDefault();
     const data = new FormData(event.target);
     const dataObject = Object.fromEntries(data.entries());
+    const textAreaText = dataObject.graphData;
 
+    updateGraph(textAreaText)
+  }
+
+  function updateGraph(textAreaText) {
     nodes = {};
     edges = [];
 
-    processGraphData(dataObject.graphData);
+    processGraphData(textAreaText);
     drawGraph();
+
+    localStorage.setItem(localStorageKey, textAreaText);
   }
 
   function processGraphData(rawInput) {
